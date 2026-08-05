@@ -1,5 +1,9 @@
 venv/
 .idea/
-__pycache__
-pytest.cache
-DSstore
+__pycache__/
+*.pyc
+.pytest_cache/
+allure-results/
+allure-report/
+.env
+.DS_Store
