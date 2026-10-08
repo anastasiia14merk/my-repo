@@ -1,5 +1,6 @@
 import allure
 
+
 @allure.epic("Memes API")
 @allure.feature("Get all pictures")
 @allure.title("Check getting all pictures")

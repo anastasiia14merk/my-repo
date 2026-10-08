@@ -2,16 +2,13 @@ import requests
 
 from endpoints.base_endpoint import BaseEndpoint
 
+
 class PostOnePicture(BaseEndpoint):
     def post_one_picture(self, token, body):
-        headers = {
-            "Authorization":token
-        }
+        headers = {"Authorization": token}
 
         self.response = requests.post(
-        "http://memesapi.course.qa-practice.com/meme",
-        headers=headers,
-        json=body
+            "http://memesapi.course.qa-practice.com/meme", headers=headers, json=body
         )
 
     def check_created_picture(self, body):
@@ -20,4 +17,3 @@ class PostOnePicture(BaseEndpoint):
         assert self.json["url"] == body["url"]
         assert self.json["tags"] == body["tags"]
         assert self.json["info"] == body["info"]
-
