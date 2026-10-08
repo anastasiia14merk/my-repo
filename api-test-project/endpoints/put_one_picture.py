@@ -13,3 +13,9 @@ class PutOnePicture(BaseEndpoint):
         json=body
         )
 
+    def check_put_one_picture(self, picture_id, body):
+        assert int(self.json["id"]) == picture_id
+        assert self.json["text"] == body["text"]
+        assert self.json["url"] == body["url"]
+        assert self.json["tags"] == body["tags"]
+        assert self.json["info"] == body["info"]

@@ -17,12 +17,7 @@ def test_post_one_picture(post_one_picture_endpoint, token):
     }
     post_one_picture_endpoint.post_one_picture(token, body)
     post_one_picture_endpoint.check_status_code(200)
-    response_json = post_one_picture_endpoint.json
-    assert "id" in response_json
-    assert response_json["text"] == body["text"]
-    assert response_json["url"] == body["url"]
-    assert response_json["tags"] == body["tags"]
-    assert response_json["info"] == body["info"]
+    post_one_picture_endpoint.check_created_picture(body)
 
 
 @pytest.mark.parametrize("missing_field", [

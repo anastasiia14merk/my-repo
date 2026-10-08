@@ -13,3 +13,7 @@ class GetAllPictures(BaseEndpoint):
         headers=headers
         )
 
+    def check_get_all_pictures(self):
+        assert self.json is not None
+        assert "data" in self.json
+

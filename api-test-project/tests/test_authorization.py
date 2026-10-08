@@ -8,4 +8,4 @@ import allure
 def test_check_authorise(check_authorise_endpoint, token):
     check_authorise_endpoint.check_authorise(token)
     check_authorise_endpoint.check_status_code(200)
-    assert 'Token is alive' in check_authorise_endpoint.response.text
+    check_authorise_endpoint.check_token_is_alive()

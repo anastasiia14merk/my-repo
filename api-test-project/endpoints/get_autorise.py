@@ -9,5 +9,8 @@ class CheckAuthorise(BaseEndpoint):
         )
         print(self.response.text)
 
+    def check_token_is_alive(self):
+        assert 'Token is alive' in self.response.text
+
 
 
