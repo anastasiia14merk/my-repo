@@ -38,7 +38,7 @@ def check_authorise_endpoint():
 
 
 @pytest.fixture
-def created_picture_id(post_one_picture_endpoint, token, delete_one_picture_endpoint):
+def created_picture_id(post_one_picture_endpoint, token):
     body = {
         "text": "Funny meme",
         "url": "https://example.com/meme.jpg",
@@ -51,9 +51,7 @@ def created_picture_id(post_one_picture_endpoint, token, delete_one_picture_endp
 
     created_picture_id = post_one_picture_endpoint.json["id"]
 
-    yield created_picture_id
-
-    delete_one_picture_endpoint.delete_one_picture(token, created_picture_id)
+    return created_picture_id
 
 
 @pytest.fixture
@@ -84,8 +82,21 @@ def deleted_picture_id(post_one_picture_endpoint, token, delete_one_picture_endp
 
 
 @pytest.fixture
-def post_one_picture_endpoint():
-    return PostOnePicture()
+def post_one_picture_endpoint(request):
+    def register_cleanup(token, picture_id):
+        def cleanup():
+            delete_endpoint = DeleteOnePicture()
+            delete_endpoint.delete_one_picture(token, picture_id)
+            # A deletion test may already have removed this record.
+            if delete_endpoint.response.status_code != 404:
+                delete_endpoint.check_status_code(200)
+            get_endpoint = GetOnePicture()
+            get_endpoint.get_one_picture(token, picture_id)
+            get_endpoint.check_status_code(404)
+
+        request.addfinalizer(cleanup)
+
+    return PostOnePicture(on_created=register_cleanup)
 
 
 @pytest.fixture

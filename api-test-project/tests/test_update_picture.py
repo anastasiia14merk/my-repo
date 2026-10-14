@@ -6,7 +6,9 @@ import pytest
 @allure.feature("Put one picture with correct data")
 @allure.title("Check updating one picture with correct data")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_put_one_picture(put_one_picture_endpoint, token, created_picture_id):
+def test_put_one_picture(
+    put_one_picture_endpoint, get_one_picture_endpoint, token, created_picture_id
+):
 
     new_body = {
         "id": created_picture_id,
@@ -19,6 +21,11 @@ def test_put_one_picture(put_one_picture_endpoint, token, created_picture_id):
     put_one_picture_endpoint.put_one_picture(token, created_picture_id, new_body)
     put_one_picture_endpoint.check_status_code(200)
     put_one_picture_endpoint.check_put_one_picture(created_picture_id, new_body)
+    get_one_picture_endpoint.get_one_picture(token, created_picture_id)
+    get_one_picture_endpoint.check_status_code(200)
+    get_one_picture_endpoint.check_get_one_picture(created_picture_id)
+    for field in ("text", "url", "tags", "info"):
+        assert get_one_picture_endpoint.json[field] == new_body[field], field
 
 
 @pytest.mark.parametrize("missing_field", ["id", "text", "url", "tags", "info"])

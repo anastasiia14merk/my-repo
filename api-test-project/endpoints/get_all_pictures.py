@@ -1,5 +1,6 @@
 import requests
 
+from config import BASE_URL, REQUEST_TIMEOUT
 from endpoints.base_endpoint import BaseEndpoint
 
 
@@ -8,7 +9,7 @@ class GetAllPictures(BaseEndpoint):
         headers = {"Authorization": token}
 
         self.response = requests.get(
-            "http://memesapi.course.qa-practice.com/meme", headers=headers
+            f"{BASE_URL}/meme", headers=headers, timeout=REQUEST_TIMEOUT
         )
 
     def check_get_all_pictures(self):
