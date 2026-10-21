@@ -15,3 +15,4 @@ class GetAllPictures(BaseEndpoint):
     def check_get_all_pictures(self):
         assert self.json is not None
         assert "data" in self.json
+        assert len(self.json["data"]) > 0, "Expected at least one meme"

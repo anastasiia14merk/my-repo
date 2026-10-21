@@ -24,10 +24,3 @@ class PostOnePicture(BaseEndpoint):
                 return
             if isinstance(payload, dict) and payload.get("id") is not None:
                 self.on_created(token, payload["id"])
-
-    def check_created_picture(self, body):
-        assert "id" in self.json
-        assert self.json["text"] == body["text"]
-        assert self.json["url"] == body["url"]
-        assert self.json["tags"] == body["tags"]
-        assert self.json["info"] == body["info"]

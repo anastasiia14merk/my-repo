@@ -13,7 +13,7 @@ def test_post_one_picture(post_one_picture_endpoint, token):
     body = deepcopy(CREATE_MEME_BODY)
     post_one_picture_endpoint.post_one_picture(token, body)
     post_one_picture_endpoint.check_status_code(200)
-    post_one_picture_endpoint.check_created_picture(body)
+    post_one_picture_endpoint.check_picture(body=body)
 
 
 @pytest.mark.parametrize("missing_field", ["text", "url", "tags", "info"])

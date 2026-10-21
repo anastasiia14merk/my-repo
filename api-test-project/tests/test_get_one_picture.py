@@ -9,7 +9,8 @@ def test_get_one_picture(get_one_picture_endpoint, created_picture_id, token):
     picture_id = created_picture_id
     get_one_picture_endpoint.get_one_picture(token, picture_id)
     get_one_picture_endpoint.check_status_code(200)
-    get_one_picture_endpoint.check_get_one_picture(picture_id)
+    get_one_picture_endpoint.check_picture(picture_id=picture_id)
+    assert "updated_by" in get_one_picture_endpoint.json
 
 
 @allure.epic("Memes API")

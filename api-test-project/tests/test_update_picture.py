@@ -18,12 +18,11 @@ def test_put_one_picture(
 
     put_one_picture_endpoint.put_one_picture(token, created_picture_id, new_body)
     put_one_picture_endpoint.check_status_code(200)
-    put_one_picture_endpoint.check_put_one_picture(created_picture_id, new_body)
+    put_one_picture_endpoint.check_picture(body=new_body, picture_id=created_picture_id)
     get_one_picture_endpoint.get_one_picture(token, created_picture_id)
     get_one_picture_endpoint.check_status_code(200)
-    get_one_picture_endpoint.check_get_one_picture(created_picture_id)
-    for field in ("text", "url", "tags", "info"):
-        assert get_one_picture_endpoint.json[field] == new_body[field], field
+    get_one_picture_endpoint.check_picture(body=new_body, picture_id=created_picture_id)
+    assert "updated_by" in get_one_picture_endpoint.json
 
 
 @pytest.mark.parametrize("missing_field", ["id", "text", "url", "tags", "info"])
