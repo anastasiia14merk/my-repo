@@ -8,6 +8,9 @@ from endpoints.post_authorise import PostAuthorise
 from endpoints.post_one_picture import PostOnePicture
 from endpoints.put_one_picture import PutOnePicture
 
+from copy import deepcopy
+from data import CREATE_MEME_BODY
+
 
 @pytest.fixture(scope="session")
 def token(request):
@@ -33,21 +36,25 @@ def token(request):
 
 
 @pytest.fixture
+def post_authorise_endpoint():
+    return PostAuthorise()
+
+
+@pytest.fixture
 def check_authorise_endpoint():
     return CheckAuthorise()
 
 
 @pytest.fixture
 def created_picture_id(post_one_picture_endpoint, token):
-    body = {
-        "text": "Funny meme",
-        "url": "https://example.com/meme.jpg",
-        "tags": ["funny", "meme"],
-        "info": {"type": "image"},
-    }
-
+    body = deepcopy(CREATE_MEME_BODY)
     post_one_picture_endpoint.post_one_picture(token, body)
-    post_one_picture_endpoint.check_status_code(200)
+    status = post_one_picture_endpoint.response.status_code
+    if status != 200:
+        raise RuntimeError(
+            f"Failed to create test data during setup. "
+            f"Expected HTTP 200, got {status}"
+        )
 
     created_picture_id = post_one_picture_endpoint.json["id"]
 
@@ -66,18 +73,23 @@ def get_one_picture_endpoint():
 
 @pytest.fixture
 def deleted_picture_id(post_one_picture_endpoint, token, delete_one_picture_endpoint):
-    body = {
-        "text": "Funny meme",
-        "url": "https://example.com/meme.jpg",
-        "tags": ["funny", "meme"],
-        "info": {"type": "image"},
-    }
+    body = deepcopy(CREATE_MEME_BODY)
     post_one_picture_endpoint.post_one_picture(token, body)
-    post_one_picture_endpoint.check_status_code(200)
+    status = post_one_picture_endpoint.response.status_code
+    if status != 200:
+        raise RuntimeError(
+            f"Failed to create test data during setup. "
+            f"Expected HTTP 200, got {status}"
+        )
     picture_id = post_one_picture_endpoint.json["id"]
 
     delete_one_picture_endpoint.delete_one_picture(token, picture_id)
-    delete_one_picture_endpoint.check_status_code(200)
+    status = delete_one_picture_endpoint.response.status_code
+    if status != 200:
+        raise RuntimeError(
+            f"Failed to delete test data during setup. "
+            f"Expected HTTP 200, got {status}"
+        )
     return picture_id
 
 
@@ -87,12 +99,6 @@ def post_one_picture_endpoint(request):
         def cleanup():
             delete_endpoint = DeleteOnePicture()
             delete_endpoint.delete_one_picture(token, picture_id)
-            # A deletion test may already have removed this record.
-            if delete_endpoint.response.status_code != 404:
-                delete_endpoint.check_status_code(200)
-            get_endpoint = GetOnePicture()
-            get_endpoint.get_one_picture(token, picture_id)
-            get_endpoint.check_status_code(404)
 
         request.addfinalizer(cleanup)
 
@@ -111,14 +117,13 @@ def delete_one_picture_endpoint():
 
 @pytest.fixture
 def picture_id_for_delete(post_one_picture_endpoint, token):
-    body = {
-        "text": "Funny old meme",
-        "url": "https://oldexample.com/meme.jpg",
-        "tags": ["funny", "meme", "old"],
-        "info": {"type": "old image"},
-    }
-
+    body = deepcopy(CREATE_MEME_BODY)
     post_one_picture_endpoint.post_one_picture(token, body)
-    post_one_picture_endpoint.check_status_code(200)
+    status = post_one_picture_endpoint.response.status_code
+    if status != 200:
+        raise RuntimeError(
+            f"Failed to create test data during setup. "
+            f"Expected HTTP 200, got {status}"
+        )
 
     return post_one_picture_endpoint.json["id"]

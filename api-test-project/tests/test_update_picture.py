@@ -1,6 +1,9 @@
 import allure
 import pytest
 
+from data import UPDATE_MEME_BODY
+from copy import deepcopy
+
 
 @allure.epic("Memes API")
 @allure.feature("Put one picture with correct data")
@@ -10,13 +13,8 @@ def test_put_one_picture(
     put_one_picture_endpoint, get_one_picture_endpoint, token, created_picture_id
 ):
 
-    new_body = {
-        "id": created_picture_id,
-        "text": "Funny  new meme",
-        "url": "https://newexample.com/meme.jpg",
-        "tags": ["funny", "meme", "new"],
-        "info": {"type": "new image"},
-    }
+    new_body = deepcopy(UPDATE_MEME_BODY)
+    new_body["id"] = created_picture_id
 
     put_one_picture_endpoint.put_one_picture(token, created_picture_id, new_body)
     put_one_picture_endpoint.check_status_code(200)
@@ -37,13 +35,33 @@ def test_put_one_picture_missing_field(
     created_picture_id, put_one_picture_endpoint, token, missing_field
 ):
 
-    new_body = {
-        "id": created_picture_id,
-        "text": "Funny  new new meme",
-        "url": "https://newnewexample.com/meme.jpg",
-        "tags": ["funny", "meme", "new", "new"],
-        "info": {"type": "new new image"},
-    }
+    new_body = deepcopy(UPDATE_MEME_BODY)
+    new_body["id"] = created_picture_id
+
     new_body.pop(missing_field)
+    put_one_picture_endpoint.put_one_picture(token, created_picture_id, new_body)
+    put_one_picture_endpoint.check_status_code(400)
+
+
+@pytest.mark.parametrize(
+    ("field", "invalid_value"),
+    [
+        pytest.param("text", ["Invalid text"], id="text-as-list"),
+        pytest.param("url", ["https://example.com/meme.jpg"], id="url-as-list"),
+        pytest.param("tags", "funny", id="tags-as-string"),
+        pytest.param("info", ["image"], id="info-as-list"),
+    ],
+)
+@allure.epic("Memes API")
+@allure.feature("Put one picture with invalid field types")
+@allure.title("Reject meme update with an invalid field type")
+@allure.severity(allure.severity_level.NORMAL)
+def test_put_one_picture_invalid_field_type(
+    created_picture_id, put_one_picture_endpoint, token, field, invalid_value
+):
+    new_body = deepcopy(UPDATE_MEME_BODY)
+    new_body["id"] = created_picture_id
+    new_body[field] = deepcopy(invalid_value)
+
     put_one_picture_endpoint.put_one_picture(token, created_picture_id, new_body)
     put_one_picture_endpoint.check_status_code(400)
