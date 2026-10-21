@@ -15,7 +15,7 @@ are reported as teardown errors.
 
 ## Installation
 
-Run the commands from the `api-test-project` directory. Tested with Python 3.14.
+Run the commands from the repository root. Tested with Python 3.14.
 
 ```bash
 python3 -m venv .venv
@@ -81,6 +81,7 @@ allure open allure-report
 ## Project Structure
 
 - `config.py` — API URL and request timeouts.
+- `data.py` — reusable test request bodies.
 - `endpoints/` — HTTP requests and response checks.
 - `conftest.py` — authorization, test data setup, and cleanup.
 - `tests/` — test scenarios.
